@@ -40,4 +40,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.body.appendChild(video);
     document.body.appendChild(renderer.domElement);
+
+
+    /*
+        Our AR engine should be able to compute the position and rotation of the cube in the video stream.
+
+
+    const ar = new SOME_AR_ENGINE();
+    while(true)
+    {
+        await nextVideoFrameReady();
+        const {position, rotation} = ar.computeObjectPose(video);
+        cube.position = position;
+        cube.rotation = rotation;
+    }
+    */
 });
