@@ -11,11 +11,11 @@ export class SimpleAR {
 
         // Offscreen canvas used to capture video frames into OpenCV
         this.canvas = document.createElement('canvas');
-        this.ctx = this.canvas.getContext('2d');
+        this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
 
         // Camera intrinsic matrices — initialised lazily in _initCameraMatrix()
         this.camMatrix = null;
-        this.distCoeffs = null;
+        this.distCoeffs = null;SimpleAR
     }
 
     /** True once OpenCV is loaded and the video stream has real dimensions */
