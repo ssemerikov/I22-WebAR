@@ -8,7 +8,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const mindarThree = new MindARThree({
 	    container: document.body,
 	    imageTargetSrc: "../assets/cup_and_face.mind",
-        maxTrack: 2
+        maxTrack: 2,
+        // замінити рамку сканування на зображення чашки
+        //uiScanning: "../assets/chashka.png",
+        // замінити рамку вказівника на зображення обличчя
+        //uiLoading: "../assets/morda.png",    
       });
 
     const {renderer, scene, camera} = mindarThree;
