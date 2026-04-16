@@ -27,7 +27,9 @@ python3 -m http.server 8080
 
 **SimpleAR class** (`task01/ar.js`): Educational marker detection implementation using OpenCV.js. Detects black square markers via contour detection, sorts corners using sum/difference approach, then uses `solvePnP` to compute 6DOF pose. OpenCV coordinates (Y-down, Z-forward) are converted to Three.js (Y-up, Z-toward-viewer) by negating Y and Z components.
 
-**Task structure**: Each `taskXX/` folder is self-contained with its own HTML entry points and JS modules. The root `index.html` links to each task. Tasks 06-17 are placeholders.
+**Task structure**: Each `taskXX/` folder is self-contained with its own HTML entry points and JS modules. The root `index.html` links to each task.
+
+**Shared utilities** (`mylib/`): Reusable loader functions (`loadGLTF`, `loadAudio`, `loadVideo`) wrapped as Promises for cleaner async/await patterns. Import from `"../mylib/loader.js"`.
 
 **Vendored libraries:**
 - `mindar/` — local copies of MindAR production bundles (image-tracking, face-tracking, A-Frame and Three.js integrations). Reference from importmaps as `"mindar-image-three": "../mindar/mindar-image-three.prod.js"`.
@@ -42,4 +44,18 @@ python3 -m http.server 8080
 - `task02/index.html` → `main.js`: MindAR image-tracking with basic geometries (cube, lathe, capsule)
 - `task03/index.html` → `main.js`: MindAR with textured meshes and TextGeometry
 - `task04/index.html` → `main.js`: MindAR with GLTFLoader for 3D model loading, anchor event handlers
-- `task05/index.html` → `main.js`: MindAR with animated GLTF models using AnimationMixer
+- `task05/index.html` → `main.js`: MindAR with animated GLTF models, positional audio
+- `task06/index.html` → `main.js`: MindAR with VideoTexture for playing video on tracked images
+
+## MindAR Integration Pattern
+
+**Anchor system**: MindAR uses anchors to track image targets. Create anchors with `mindarThree.addAnchor(index)` where index corresponds to targets in the `.mind` file. Add 3D content to `anchor.group`:
+
+```javascript
+const anchor = mindarThree.addAnchor(0);
+anchor.group.add(myMesh);
+```
+
+**Event handlers**: Anchors emit `onTargetFound` and `onTargetLost` for triggering actions (play/pause audio, video, animations).
+
+**Animation loop**: Use `renderer.setAnimationLoop()` instead of `requestAnimationFrame()` for proper timing with MindAR's internal loop.
