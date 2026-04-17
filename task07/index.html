@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Домашнє завдання 07</title>
+        <style>
+            body {
+                margin: 0;
+            }
+            #container {
+                width: 100vw;
+                height: 100vh;
+                position: relative;
+                overflow: hidden;
+            }
+            #ar-div {
+                width: 1000px;
+                height: 1000px;
+                visibility: hidden;
+                background: #0000ff;
+                opacity: 0.6;
+                font-size: 100px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: white;
+            }
+        </style>
+        <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.183.2/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.2/examples/jsm/",
+                "three/fonts/": "https://cdn.jsdelivr.net/npm/three@0.183.2/examples/fonts/",
+                "mindar-image-three":"../mindar/mindar-image-three.prod.js"
+            }
+        }
+        </script>
+        <script type="module" src="./main.js"></script>
+    </head>
+    <body>
+        <div id="container"></div>
+        <div id="ar-div">
+            CSS div як елемент доповненої реальності
+        </div>
+    </body>
+</html>

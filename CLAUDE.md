@@ -46,6 +46,7 @@ python3 -m http.server 8080
 - `task04/index.html` → `main.js`: MindAR with GLTFLoader for 3D model loading, anchor event handlers
 - `task05/index.html` → `main.js`: MindAR with animated GLTF models, positional audio
 - `task06/index.html` → `main.js`: MindAR with VideoTexture for playing video on tracked images
+- `task07/index.html` → `main.js`: MindAR with CSS3DRenderer for overlaying HTML content on tracked images
 
 ## MindAR Integration Pattern
 
@@ -54,6 +55,19 @@ python3 -m http.server 8080
 ```javascript
 const anchor = mindarThree.addAnchor(0);
 anchor.group.add(myMesh);
+```
+
+**CSS anchors** (for HTML overlays): Use `mindarThree.addCSSAnchor(index)` with CSS3DRenderer to overlay HTML elements. MindAR provides `cssRenderer`, `cssScene`, and `camera` alongside the regular `renderer` and `scene`:
+
+```javascript
+const { renderer, cssRenderer, scene, cssScene, camera } = mindarThree;
+const anchor = mindarThree.addCSSAnchor(0);
+const cssObject = new CSS3DObject(htmlElement);
+anchor.group.add(cssObject);
+
+renderer.setAnimationLoop(() => {
+    cssRenderer.render(cssScene, camera);
+});
 ```
 
 **Event handlers**: Anchors emit `onTargetFound` and `onTargetLost` for triggering actions (play/pause audio, video, animations).
