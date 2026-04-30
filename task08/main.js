@@ -4,7 +4,7 @@
  * а до другого - довільне відео з Vimeo - https://vimeo.com/165400639 .
  */
 
-import { MindARThree } from 'mindar-image-three';
+import { MindARThree } from 'mindar-face-three';
 import { CSS3DObject } from "three/addons/renderers/CSS3DRenderer.js";
 
 // YouTube IFrame API loader
@@ -31,8 +31,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const mindarThree = new MindARThree({
         container: document.querySelector("#container"),
-        imageTargetSrc: "../assets/citraiod.mind",
-        maxTrack: 2,
+        //imageTargetSrc: "../assets/citraiod.mind",
+        //maxTrack: 2,
     });
 
     const { renderer, cssRenderer, scene, cssScene, camera } = mindarThree;
@@ -40,11 +40,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const arDiv = document.querySelector("#ar-div");
     const arDiv2 = document.querySelector("#ar-div-2");
 
-    const anchor1 = mindarThree.addCSSAnchor(0);
+    const anchor1 = mindarThree.addCSSAnchor(234);
     const cssObj1 = new CSS3DObject(arDiv);
     anchor1.group.add(cssObj1);
 
-    const anchor2 = mindarThree.addCSSAnchor(1);
+    const anchor2 = mindarThree.addCSSAnchor(454);
     const cssObj2 = new CSS3DObject(arDiv2);
     anchor2.group.add(cssObj2);
 

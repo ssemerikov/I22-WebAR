@@ -32,7 +32,7 @@ python3 -m http.server 8080
 **Shared utilities** (`mylib/`): Reusable loader functions (`loadGLTF`, `loadAudio`, `loadVideo`) wrapped as Promises for cleaner async/await patterns. Import from `"../mylib/loader.js"`.
 
 **Vendored libraries:**
-- `mindar/` — local copies of MindAR production bundles (image-tracking, face-tracking, A-Frame and Three.js integrations). Reference from importmaps as `"mindar-image-three": "../mindar/mindar-image-three.prod.js"`.
+- `mindar/` — local copies of MindAR production bundles (image-tracking, face-tracking, A-Frame and Three.js integrations). Reference from importmaps as `"mindar-image-three": "../mindar/mindar-image-three.prod.js"` or `"mindar-face-three": "../mindar/mindar-face-three.prod.js"`.
 - `mind-ar-js-master/` — full repository clone for reference (not used directly).
 
 **Assets:** `assets/` contains image targets (`.png`), compiled MindAR target files (`.mind`), and 3D models (`.glb`).
@@ -47,8 +47,11 @@ python3 -m http.server 8080
 - `task05/index.html` → `main.js`: MindAR with animated GLTF models, positional audio
 - `task06/index.html` → `main.js`: MindAR with VideoTexture for playing video on tracked images
 - `task07/index.html` → `main.js`: MindAR with CSS3DRenderer for overlaying HTML content on tracked images
+- `task08/index.html` → `main.js`: MindAR face-tracking with YouTube and Vimeo video overlays via CSS3DObject
 
 ## MindAR Integration Pattern
+
+### Image Tracking
 
 **Anchor system**: MindAR uses anchors to track image targets. Create anchors with `mindarThree.addAnchor(index)` where index corresponds to targets in the `.mind` file. Add 3D content to `anchor.group`:
 
@@ -67,7 +70,57 @@ anchor.group.add(cssObject);
 
 renderer.setAnimationLoop(() => {
     cssRenderer.render(cssScene, camera);
+    renderer.render(scene, camera); // also render Three.js scene
 });
+```
+
+### Face Tracking
+
+**Face landmark anchors**: Face tracking uses numeric landmark IDs instead of image target indices. Common landmarks include 234 (left cheek area) and 454 (right cheek area):
+
+```javascript
+import { MindARThree } from 'mindar-face-three';
+
+const mindarThree = new MindARThree({
+    container: document.querySelector("#container"),
+});
+
+const anchor1 = mindarThree.addCSSAnchor(234); // left face area
+const anchor2 = mindarThree.addCSSAnchor(454); // right face area
+```
+
+**Video player integration** (task08): Use CSS3DObject to overlay YouTube/Vimeo players on face landmarks:
+
+```javascript
+// YouTube IFrame API
+const YT = await loadYouTubeIframeAPI();
+const youtubePlayer = new YT.Player('youtube-player', {
+    videoId: 'VIDEO_ID',
+    playerVars: { 'autoplay': 0, 'controls': 0 }
+});
+
+// Vimeo Player API
+const vimeoPlayer = new Vimeo.Player(document.querySelector('#vimeo-player'));
+
+// Toggle visibility on target found/lost
+anchor1.onTargetFound = () => {
+    arDiv.style.visibility = "visible";
+    youtubePlayer.playVideo();
+};
+anchor1.onTargetLost = () => {
+    arDiv.style.visibility = "hidden";
+    youtubePlayer.pauseVideo();
+};
+```
+
+### Common Patterns
+
+**VideoTexture** (task06): Load video onto tracked images using `THREE.VideoTexture`:
+
+```javascript
+const video = await loadVideo("path/to/video.mp4");
+const texture = new THREE.VideoTexture(video);
+const material = new THREE.MeshBasicMaterial({ map: texture });
 ```
 
 **Event handlers**: Anchors emit `onTargetFound` and `onTargetLost` for triggering actions (play/pause audio, video, animations).
