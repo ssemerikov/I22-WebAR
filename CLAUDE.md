@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Student coursework site for "Augmented Reality on the Web" (Доповнена реальність у веб), group I-22. The course progresses through 17 tasks (`task01/` – `task17/`), each building toward browser-based AR using Three.js and the webcam.
 
+**Language:** UI text and comments are in Ukrainian. Code variable names and technical terms are in English.
+
 ## Running the Project
 
 No build system. Serve files over HTTP (required for ES modules and `getUserMedia`):
@@ -48,6 +50,8 @@ python3 -m http.server 8080
 - `task06/index.html` → `main.js`: MindAR with VideoTexture for playing video on tracked images
 - `task07/index.html` → `main.js`: MindAR with CSS3DRenderer for overlaying HTML content on tracked images
 - `task08/index.html` → `main.js`: MindAR face-tracking with YouTube and Vimeo video overlays via CSS3DObject
+- `task09/index.html` → `main.js`: MindAR face-tracking with occlusion using renderOrder and occluder materials
+- `task10/index.html` → `code.js`: MindAR face-tracking with textured face mesh using `addFaceMesh()`
 
 ## MindAR Integration Pattern
 
@@ -76,7 +80,7 @@ renderer.setAnimationLoop(() => {
 
 ### Face Tracking
 
-**Face landmark anchors**: Face tracking uses numeric landmark IDs instead of image target indices. Common landmarks include 234 (left cheek area) and 454 (right cheek area):
+**Face landmark anchors**: Face tracking uses numeric landmark IDs instead of image target indices. There are 468 landmarks available. Common landmarks include 10 (top of head), 168 (between eyes), 234 (left cheek area), and 454 (right cheek area):
 
 ```javascript
 import { MindARThree } from 'mindar-face-three';
@@ -87,6 +91,32 @@ const mindarThree = new MindARThree({
 
 const anchor1 = mindarThree.addCSSAnchor(234); // left face area
 const anchor2 = mindarThree.addCSSAnchor(454); // right face area
+```
+
+**Face mesh with texture** (task10): Use `addFaceMesh()` to create a mesh that follows the face, then apply a texture:
+
+```javascript
+const faceMesh = mindarThree.addFaceMesh();
+const textureLoader = new THREE.TextureLoader();
+textureLoader.load('../assets/texture.png', (texture) => {
+    faceMesh.material.map = texture;
+    faceMesh.material.transparent = true;
+    faceMesh.material.needsUpdate = true;
+});
+scene.add(faceMesh);
+```
+
+**Face mesh visibility control** (task09): Manually control face mesh visibility in the animation loop to prevent MindAR from auto-showing it:
+
+```javascript
+let maskActive = false;
+faceMesh.visible = maskActive;
+
+renderer.setAnimationLoop(() => {
+    faceMesh.visible = maskActive;
+    if (faceMesh.material) faceMesh.material.visible = maskActive;
+    renderer.render(scene, camera);
+});
 ```
 
 **Video player integration** (task08): Use CSS3DObject to overlay YouTube/Vimeo players on face landmarks:
@@ -111,6 +141,34 @@ anchor1.onTargetLost = () => {
     arDiv.style.visibility = "hidden";
     youtubePlayer.pauseVideo();
 };
+```
+
+**Video toggle** (task10): Hide the webcam video while keeping AR rendering:
+
+```javascript
+const toggleBtn = document.querySelector("#toggle-btn");
+toggleBtn.addEventListener("click", () => {
+    const video = document.querySelector("#container video");
+    if (video) {
+        video.style.visibility = videoVisible ? "hidden" : "visible";
+    }
+});
+```
+
+**Occlusion** (task09): Use renderOrder and occluder materials to hide AR objects behind the face:
+
+```javascript
+// Occluder mesh (head model) - renders first, invisible to eye but blocks later renders
+const occluderMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, colorWrite: false });
+occluder.scene.traverse((o) => {
+    if (o.isMesh) {
+        o.material = occluderMaterial;
+    }
+});
+occluder.scene.renderOrder = 0; // Render first
+
+// Visible AR object (e.g., hat) - renders second, occluded by occluder
+hat.scene.renderOrder = 1; // Render second
 ```
 
 ### Common Patterns
