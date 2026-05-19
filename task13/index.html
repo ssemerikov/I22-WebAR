@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script data-consolejs-channel="614040b7-b7f7-a23a-9367-3299d2f40577" src="https://remotejs.com/agent/agent.js"></script>
+        <style>
+            body { margin: 0; overflow: hidden; }
+            #info {
+                position: fixed;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: white;
+                font: 14px system-ui, sans-serif;
+                text-align: center;
+                z-index: 10;
+                pointer-events: none;
+                text-shadow: 0 0 4px rgba(0,0,0,0.8);
+            }
+        </style>
+        <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+            }
+        }
+        </script>
+        <script type="module" src="./main.js"></script>
+    </head>
+    <body>
+        <div id="info">Торкніться поверхні, щоб розмістити пташку</div>
+    </body>
+</html>

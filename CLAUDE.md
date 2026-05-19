@@ -23,7 +23,7 @@ python3 -m http.server 8080
 
 **Three.js** is loaded via browser-native importmaps in each HTML file — no npm install needed. Each task declares its own importmap and can pin its own Three.js version.
 
-**Version compatibility constraint:** MindAR v1.2.5 imports `sRGBEncoding` from Three.js, which was removed in r162. Tasks using MindAR must pin Three.js to `0.161.0` or earlier. The vendored `mindar/` bundles may be patched to work with newer versions.
+**Version compatibility constraint:** MindAR v1.2.5 imports `sRGBEncoding` from Three.js, which was removed in r162. Tasks using MindAR must pin Three.js to `0.161.0` or earlier. Tasks using native WebXR (task11+) can use newer Three.js versions (e.g., 0.170.0).
 
 **AR overlay pattern** (task01): webcam `<video>` + Three.js `<canvas>` are both `position: absolute`, layered in DOM order — video first, canvas on top with `alpha: true` renderer so the 3D scene is transparent where no geometry exists.
 
@@ -52,6 +52,9 @@ python3 -m http.server 8080
 - `task08/index.html` → `main.js`: MindAR face-tracking with YouTube and Vimeo video overlays via CSS3DObject
 - `task09/index.html` → `main.js`: MindAR face-tracking with occlusion using renderOrder and occluder materials
 - `task10/index.html` → `code.js`: MindAR face-tracking with textured face mesh using `addFaceMesh()`
+- `task11/index.html` → `main.js`: Native WebXR immersive-ar session with manual XR button (Three.js 0.170.0, no MindAR)
+- `task12/index.html` → `main.js`: Native WebXR with custom `UARButton` class (localized Ukrainian labels, DOM overlay) and conditional rendering (Three.js 0.170.0, no MindAR)
+- `task13/index.html` → `main.js`: Native WebXR з розміщенням випадкових 3D моделей пташок (GLTFLoader) на поверхнях за допомогою hit-test, reticle-індикатор, контролер `select` подія (Three.js 0.170.0, UARButton)
 
 ## MindAR Integration Pattern
 
@@ -184,3 +187,15 @@ const material = new THREE.MeshBasicMaterial({ map: texture });
 **Event handlers**: Anchors emit `onTargetFound` and `onTargetLost` for triggering actions (play/pause audio, video, animations).
 
 **Animation loop**: Use `renderer.setAnimationLoop()` instead of `requestAnimationFrame()` for proper timing with MindAR's internal loop.
+
+### WebXR (Native)
+
+Tasks 11+ use the native WebXR API instead of MindAR. Key differences:
+
+**Session management**: Use `navigator.xr.requestSession("immersive-ar", ...)` to start an AR session. Check support first with `navigator.xr.isSessionSupported("immersive-ar")`.
+
+**DOM overlay**: Pass `{ optionalFeatures: ["dom-overlay"], domOverlay: { root: document.body } }` to overlay HTML elements on the AR view.
+
+**Conditional rendering**: Guard the render loop with `renderer.xr.isPresenting` (task12) or track session state manually (task11) — don't render when no XR session is active.
+
+**Custom AR button**: Task12 defines a `UARButton` class (modeled on Three.js's `XRButton`) with Ukrainian labels, styled button, and session lifecycle handling. This replaces the built-in `XRButton` import.

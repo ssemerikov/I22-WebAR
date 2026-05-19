@@ -40,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         renderer.xr.addEventListener("sessionstart", (e) => {
             console.log("Сесiю WebXR розпочато");
-            currentSession = e.session;
             arButton.textContent = "Завершити сесiю WebXR";
         });
 
