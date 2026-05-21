@@ -29,15 +29,18 @@ python3 -m http.server 8080
 
 **SimpleAR class** (`task01/ar.js`): Educational marker detection implementation using OpenCV.js. Detects black square markers via contour detection, sorts corners using sum/difference approach, then uses `solvePnP` to compute 6DOF pose. OpenCV coordinates (Y-down, Z-forward) are converted to Three.js (Y-up, Z-toward-viewer) by negating Y and Z components.
 
-**Task structure**: Each `taskXX/` folder is self-contained with its own HTML entry points and JS modules. The root `index.html` links to each task.
+**Task structure**: Each `taskXX/` folder is self-contained with its own HTML entry points and JS modules. The root `index.html` links to each task. Tasks 15–17 are currently empty placeholders.
 
-**Shared utilities** (`mylib/`): Reusable loader functions (`loadGLTF`, `loadAudio`, `loadVideo`) wrapped as Promises for cleaner async/await patterns. Import from `"../mylib/loader.js"`.
+**Shared utilities** (`mylib/`):
+- `loader.js` — Promise-wrapped loaders for GLTF models, audio, and video. Import from `"../mylib/loader.js"`.
+- `UARButton.js` — Custom WebXR AR button with Ukrainian labels and styled DOM overlay, extracted from task12 for reuse in later WebXR tasks.
 
 **Vendored libraries:**
 - `mindar/` — local copies of MindAR production bundles (image-tracking, face-tracking, A-Frame and Three.js integrations). Reference from importmaps as `"mindar-image-three": "../mindar/mindar-image-three.prod.js"` or `"mindar-face-three": "../mindar/mindar-face-three.prod.js"`.
 - `mind-ar-js-master/` — full repository clone for reference (not used directly).
+- `human-main/` — vendored build of the `human` library for face analysis (age, gender, emotion detection) used in task14.
 
-**Assets:** `assets/` contains image targets (`.png`), compiled MindAR target files (`.mind`), and 3D models (`.glb`).
+**Assets:** `assets/` contains image targets (`.png`), compiled MindAR target files (`.mind`), 3D models (`.glb`), videos, and audio.
 
 ## Current State
 
@@ -54,7 +57,9 @@ python3 -m http.server 8080
 - `task10/index.html` → `code.js`: MindAR face-tracking with textured face mesh using `addFaceMesh()`
 - `task11/index.html` → `main.js`: Native WebXR immersive-ar session with manual XR button (Three.js 0.170.0, no MindAR)
 - `task12/index.html` → `main.js`: Native WebXR with custom `UARButton` class (localized Ukrainian labels, DOM overlay) and conditional rendering (Three.js 0.170.0, no MindAR)
-- `task13/index.html` → `main.js`: Native WebXR з розміщенням випадкових 3D моделей пташок (GLTFLoader) на поверхнях за допомогою hit-test, reticle-індикатор, контролер `select` подія (Three.js 0.170.0, UARButton)
+- `task13/index.html` → `main.js`: Native WebXR with hit-test surface placement of random bird GLTF models, reticle indicator, controller `select` event (Three.js 0.170.0, UARButton)
+- `task14/index.html` → `code.js`: MindAR face-tracking with ear anchors and video visibility toggle (Three.js 0.161.0). Intended to integrate the `human` library for age/gender/emotion detection and gesture control.
+- `task15/` – `task17/`: Empty placeholders.
 
 ## MindAR Integration Pattern
 
@@ -198,4 +203,35 @@ Tasks 11+ use the native WebXR API instead of MindAR. Key differences:
 
 **Conditional rendering**: Guard the render loop with `renderer.xr.isPresenting` (task12) or track session state manually (task11) — don't render when no XR session is active.
 
-**Custom AR button**: Task12 defines a `UARButton` class (modeled on Three.js's `XRButton`) with Ukrainian labels, styled button, and session lifecycle handling. This replaces the built-in `XRButton` import.
+**Custom AR button**: Task12 defines a `UARButton` class (modeled on Three.js's `XRButton`) with Ukrainian labels, styled button, and session lifecycle handling. This replaces the built-in `XRButton` import. The class was extracted to `mylib/UARButton.js` for reuse in subsequent WebXR tasks.
+
+**Hit-test pattern** (task13): Request a `hit-test` source at session start, then query it each frame to place a reticle on detected surfaces:
+
+```javascript
+const xrButton = UARButton.createButton(renderer, {
+    requiredFeatures: ["hit-test"],
+    optionalFeatures: ["dom-overlay"],
+    domOverlay: { root: document.body },
+});
+
+let hitTestSource = null;
+renderer.xr.addEventListener("sessionstart", async () => {
+    const session = renderer.xr.getSession();
+    const viewerSpace = await session.requestReferenceSpace("viewer");
+    hitTestSource = await session.requestHitTestSource({ space: viewerSpace });
+});
+
+renderer.setAnimationLoop((timestamp, frame) => {
+    if (frame && hitTestSource) {
+        const results = frame.getHitTestResults(hitTestSource);
+        if (results.length > 0) {
+            const pose = results[0].getPose(renderer.xr.getReferenceSpace());
+            reticle.visible = true;
+            reticle.matrix.fromArray(pose.transform.matrix);
+        } else {
+            reticle.visible = false;
+        }
+    }
+    renderer.render(scene, camera);
+});
+```

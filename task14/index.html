@@ -1,0 +1,157 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Домашнє завдання 14</title>
+        <style>
+            body {
+                margin: 0;
+            }
+            #container {
+                width: 100vw;
+                height: 100vh;
+                position: relative;
+                overflow: hidden;
+            }
+            #toggle-btn {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1000;
+                padding: 10px 20px;
+                background: rgba(0, 0, 0, 0.7);
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+            #toggle-btn:hover {
+                background: rgba(0, 0, 0, 0.9);
+            }
+            #info {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 1000;
+                padding: 12px 20px;
+                background: rgba(0, 0, 0, 0.7);
+                color: white;
+                border-radius: 8px;
+                font-family: system-ui, -apple-system, sans-serif;
+                font-size: 14px;
+                max-width: 280px;
+                line-height: 1.5;
+            }
+            #help-btn {
+                position: fixed;
+                top: 20px;
+                right: 180px;
+                z-index: 1000;
+                padding: 10px 20px;
+                background: rgba(0, 0, 0, 0.7);
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+            #help-btn:hover {
+                background: rgba(0, 0, 0, 0.9);
+            }
+            #voice-btn {
+                position: fixed;
+                top: 20px;
+                right: 330px;
+                z-index: 1000;
+                padding: 10px 20px;
+                background: rgba(0, 0, 0, 0.7);
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+            #voice-btn:hover {
+                background: rgba(0, 0, 0, 0.9);
+            }
+            #voice-btn.active {
+                background: rgba(220, 20, 60, 0.85);
+            }
+            #help-card {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 1000;
+                padding: 16px 20px;
+                background: rgba(0, 0, 0, 0.85);
+                color: white;
+                border-radius: 10px;
+                font-family: system-ui, -apple-system, sans-serif;
+                font-size: 13px;
+                max-width: 320px;
+                line-height: 1.6;
+                display: none;
+            }
+            #help-card h3 {
+                margin: 0 0 8px 0;
+                font-size: 15px;
+                border-bottom: 1px solid rgba(255,255,255,0.3);
+                padding-bottom: 6px;
+            }
+            #help-card ul {
+                margin: 0;
+                padding-left: 18px;
+            }
+            #help-card li {
+                margin-bottom: 4px;
+            }
+        </style>
+        <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/",
+                "three/fonts/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/fonts/",
+                "mindar-face-three":"../mindar/mindar-face-three.prod.js",
+                "human":"../human-main/dist/human.esm.js"
+            }
+        }
+        </script>
+        <script type="module" src="./code.js"></script>
+    </head>
+    <body>
+        <button id="help-btn">Довідка</button>
+        <button id="voice-btn">Голос OFF</button>
+        <button id="toggle-btn">Приховати відео</button>
+        <div id="info">Завантаження моделей...</div>
+        <div id="help-card">
+            <h3>Жести управління</h3>
+            <ul>
+                <li><strong>V (победа):</strong> збільшити модель</li>
+                <li><strong>Thumb up:</strong> зменшити модель</li>
+                <li><strong>Вказівний палець:</strong> наблизити модель</li>
+                <li><strong>Кулак:</strong> віддалити модель</li>
+                <li><strong>Позиція руки зліва/справа:</strong> обертання моделі</li>
+                <li><strong>Позиція руки вгорі/внизу:</strong> наближення/віддалення</li>
+            </ul>
+            <h3 style="margin-top:12px">Освітлення</h3>
+            <ul>
+                <li><strong>happy:</strong> тепле яскраве</li>
+                <li><strong>sad:</strong> тьмяне холодне</li>
+                <li><strong>angry:</strong> червоне</li>
+                <li><strong>surprise:</strong> біле максимальне</li>
+            </ul>
+            <h3 style="margin-top:12px">Голосові команди</h3>
+            <ul>
+                <li><strong>«ближче»:</strong> наблизити модель</li>
+                <li><strong>«далі»:</strong> віддалити модель</li>
+                <li><strong>«більше»:</strong> збільшити модель</li>
+                <li><strong>«менше»:</strong> зменшити модель</li>
+                <li><strong>«вліво»:</strong> обернути модель вліво</li>
+                <li><strong>«вправо»:</strong> обернути модель вправо</li>
+            </ul>
+        </div>
+        <div id="container"></div>
+    </body>
+</html>
