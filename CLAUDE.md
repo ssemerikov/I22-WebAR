@@ -59,7 +59,9 @@ python3 -m http.server 8080
 - `task12/index.html` → `main.js`: Native WebXR with custom `UARButton` class (localized Ukrainian labels, DOM overlay) and conditional rendering (Three.js 0.170.0, no MindAR)
 - `task13/index.html` → `main.js`: Native WebXR with hit-test surface placement of random bird GLTF models, reticle indicator, controller `select` event (Three.js 0.170.0, UARButton)
 - `task14/index.html` → `code.js`: MindAR face-tracking with ear anchors and video visibility toggle (Three.js 0.161.0). Intended to integrate the `human` library for age/gender/emotion detection and gesture control.
-- `task15/` – `task17/`: Empty placeholders.
+- `task15/index.html` → `main.js`: Native WebXR hit-test with owl model placement and textured reticle (Three.js 0.170.0, UARButton)
+- `task16/index.html` → `main.js`: Native WebXR furniture placement with hit-test, thumbnail item selection, drag-to-rotate, and confirm/cancel UI overlay (Three.js 0.170.0, UARButton, domOverlay)
+- `task17/`: Empty placeholder.
 
 ## MindAR Integration Pattern
 
@@ -235,3 +237,32 @@ renderer.setAnimationLoop((timestamp, frame) => {
     renderer.render(scene, camera);
 });
 ```
+
+## Development Workflow
+
+### Running the Project
+To run any task, serve the repository root over HTTP and open the task's HTML file in a browser.
+```bash
+python3 -m http.server 8080
+# Then visit http://localhost:8080/taskXX/index.html
+```
+ES modules and `getUserMedia` (webcam) require a secure origin (localhost is acceptable).
+
+### Common Tasks
+- **Checking Three.js version**: Each task's HTML file contains an importmap that pins the Three.js version. For MindAR tasks (task02-task10), ensure the version is 0.161.0 or earlier. For WebXR tasks (task11+), newer versions (e.g., 0.170.0) are used.
+- **Using shared utilities**: The `mylib/` directory contains `loader.js` for loading GLTF models, audio, and video, and `UARButton.js` for a localized AR button in WebXR tasks. Import them with relative paths, e.g., `import { loadGLTF } from "../mylib/loader.js";`.
+- **Debugging**: Use the browser's developer tools to inspect the console for errors and to monitor network requests.
+- **Updating assets**: Place new image targets in `assets/` and regenerate `.mind` files using the MindAR toolkit (if needed). 3D models (`.glb`) and media (video/audio) also go in `assets/`.
+- **Task structure**: Each task is self-contained. To create a new task, copy an existing task's directory, update the importmap if necessary, and modify the JavaScript logic.
+
+### Testing and Validation
+There are no automated tests. Validate changes by:
+1. Ensuring the webcam feed loads and is visible.
+2. Verifying that AR content appears correctly when tracking targets or faces.
+3. Checking that interactions (e.g., button clicks, video playback) work as expected.
+4. Monitoring the browser console for any errors or warnings.
+
+### Notes on Dependencies
+- No build system or package managers are used. All libraries are loaded via CDN or vendored copies.
+- MindAR libraries are vendored in the `mindar/` directory.
+- The `human` library (for face analysis) is vendored in `human-main/` and used in task14.

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Розстановка меблів</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+    #overlay-root {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    #item-buttons, #confirm-buttons {
+      position: fixed;
+      top: 50px;
+      left: 0;
+      width: 100%;
+      z-index: 9999;
+      display: none;
+      flex-direction: row;
+      justify-content: center;
+      pointer-events: auto;
+    }
+    .button-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      margin: 5px;
+      border-radius: 8px;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+    }
+    .button {
+      width: 70px;
+      height: 50px;
+      margin: 5px;
+      border-radius: 8px;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      font: bold 18px system-ui, sans-serif;
+      cursor: pointer;
+    }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body>
+  <div id="overlay-root">
+    <div id="item-buttons">
+      <img class="button-image" id="item0" src="../assets/models/coffee-table/thumbnail.png"/>
+      <img class="button-image" id="item1" src="../assets/models/chair/thumbnail.png"/>
+      <img class="button-image" id="item2" src="../assets/models/cushion/thumbnail.png"/>
+    </div>
+    <div id="confirm-buttons">
+      <button class="button" id="place">ОК</button>
+      <button class="button" id="cancel">Скасувати</button>
+    </div>
+  </div>
+</body>
+</html>
